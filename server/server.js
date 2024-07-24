@@ -11,7 +11,28 @@ import Watcher from 'watcher';
 const app = express()
 const port = 2137
 
+//board function
 
+
+function createBoard(){
+    fs.writeFileSync("./serverFiles/Board.json",JSON.stringify({"boardObjectsArr":[]}))
+    let gameBoardCreate = fs.readFileSync( "./serverFiles/Board.json", "utf-8" )
+    let boardObj = {
+        src:``,
+        data:{
+            bars:[]
+},
+    }
+var objGameBoard = JSON.parse(gameBoardCreate)
+
+for (let i = 0; i < 374; i++) {
+ objGameBoard.boardObjectsArr.push(boardObj) 
+}
+var x = JSON.stringify(objGameBoard)
+
+fs.writeFileSync("./serverFiles/Board.json",x)
+}
+createBoard()
 
 
     
@@ -72,7 +93,25 @@ app.get('/getToken', (req, res) => {
     
 //--gameBoard
 //upload
+app.post('/gameBoardTokenUP', (req, res) => {
+
+        
+    })
 //download
+const wssT = new WebSocketServer({ port: 2139 });
+    const watcherT = new Watcher ( "./serverFiles/Board.json" );
+        wssT.on('connection', function connection(ws) {
+
+            let gameBoard1 = fs.readFileSync( "./serverFiles/Board.json", "utf-8" )
+                ws.send(gameBoard1)
+
+            watcherT.on ( 'all', ( event, targetPath, targetPathNext ) => { 
+                let gameBoard2 = fs.readFileSync( "./serverFiles/Board.json", "utf-8" )
+                ws.send(gameBoard2)
+            });
+
+
+    })
 app.listen(port, () => {
   console.log("i live...prolly")
 })

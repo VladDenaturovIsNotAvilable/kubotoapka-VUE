@@ -5,7 +5,9 @@
             <div class = "imageDiv"  v-for = " img in boardArray" v-bind:id = "img"
             @:dragover= "(e)=>{
                 this.over = e.target.id
-            }"></div> 
+            }">
+                <img v-bind:src = "img.src" width = "40px" height = "40px" >
+            </div> 
         </div>
 
     </div>
@@ -14,7 +16,9 @@
             <img id = 'niq' v-for="ele in tokenArray" draggable="true" class = "tokenImage" v-bind:src = "ele.data " @:dragend= "(e)=>{
                 if (this.over != ``) {
                     console.log(e.target.src)
-                    console.log(this.over) //this here will send a data to a server OwO
+                    console.log(this.over)
+
+                    
                 }
                
             }" >
@@ -43,11 +47,14 @@
                  var resData = await response.json()
                  this.tokenArray = (resData.tokensArray)
             },1)
-                //board client creation...
-                for (let index = 0; index < 374 ; index++) {
-                    this.boardArray.push(index)
-                    
-                }
+                
+                //board download.. 374 obj
+                var socket = new WebSocket("http://localhost:2139")
+            socket.addEventListener("message", (eve) => { 
+             var x = JSON.parse(eve.data)
+             console.log(x)
+                this.boardArray = x.boardObjectsArr
+});
         },
         methods:{
             //for TokenField
