@@ -1,0 +1,10 @@
+{
+  "type":"module",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "express-ws": "^5.0.2",
+    "watcher": "^2.3.1",
+    "ws": "^8.18.0"
+  }
+}
