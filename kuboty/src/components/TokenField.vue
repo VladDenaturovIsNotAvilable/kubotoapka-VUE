@@ -2,26 +2,18 @@
     <div class = "board" @:dragenter = "(e)=>{this.over = ''}" >
 
         <div class = innerBoard>
-            <div class = "imageDiv"  v-for = " img in boardArray" v-bind:id = "img"
+            <div class = "imageDiv"  v-for = " img in boardArray" 
             @:dragover= "(e)=>{
                 this.over = e.target.id
             }">
-                <img v-bind:src = "img.src" width = "40px" height = "40px" >
+                <img v-bind:src = "img.src" width = "40px" height = "40px" v-bind:id = "img.id" >
             </div> 
         </div>
 
     </div>
     <div class = "tokenField" >
         <div>
-            <img id = 'niq' v-for="ele in tokenArray" draggable="true" class = "tokenImage" v-bind:src = "ele.data " @:dragend= "(e)=>{
-                if (this.over != ``) {
-                    console.log(e.target.src)
-                    console.log(this.over)
-
-                    
-                }
-               
-            }" >
+            <img id = 'niq' v-for="ele in tokenArray" draggable="true" class = "tokenImage" v-bind:src = "ele.data " @:dragend= "uploadBoardToken">
         </div>
            
     </div>
@@ -76,7 +68,21 @@
                 body:JSON.stringify(tokenBinary)},);
                 } sendToken()
                 }
-            }
+            },
+
+            uploadBoardToken(e){
+                const data = {
+                    img:e.target.src,
+                    number:this.over
+                }
+                async function sendImg(){
+                    const response = await fetch("http://localhost:2137/gameBoardUpload",{
+                method:"POST",
+                headers:{"Content-Type": "application/json"},
+                body:JSON.stringify(data)},);
+                console.log(data)
+                } sendImg()
+                }
         }
     }
 
@@ -142,6 +148,10 @@
     height:50px;
     border-style: ridge;
     border-width:1px;
+    display:flex;
+    flex-wrap: wrap;
+    align-content:center;
+    justify-content:center;
     
 }
 </style>
