@@ -8,7 +8,7 @@
             }">
 
 
-            <div class = "barsContainer" >
+            <div class = "barsContainer" ref = "bars">
                 <div v-if = "img.hasData" v-for = "elem in barsArray" class = "bar"></div>
             </div>
                 <img class = "image" v-bind:src = "img.src" width = "40px" height = "40px" v-bind:id = "img.id"  @:dragstart = "moveStart" @:dragover = "moveOver"  @:dragend = "moveEnd" @:contextmenu = "context" >
@@ -132,11 +132,11 @@
                 e.preventDefault();
                 this.contexted = "true"
                 var element = document.createElement("div")
-                var elRef = this.$refs.image[e.target.id]
+                //var elRef = this.$refs.image[e.target.id]
                 
 
                 if (this.clicked === 0 ) {
-                elRef.appendChild(element)
+                document.body.appendChild(element)
                     element.className = "contextMenu"
                     element.style.left = e.clientX + 50 + `px`
                     element.style.top = e.clientY + `px`
@@ -144,7 +144,7 @@
                     console.log(e.target)
 
                 } else {
-                    elRef.removeChild((elRef.children[2]))
+                    document.body.removeChild((document.body.children[document.body.children.length-1]))
                     this.clicked = 0
                     this.contexted = "false"
                 }
@@ -176,7 +176,6 @@
 
 
     display:flex;
-    gap:0;
     flex-wrap:wrap;
     align-content:flex-start;
 
@@ -190,9 +189,6 @@
     border-width: 1px
 }
 .board{
-    overflow-x: scroll;
-    overflow-y:visible;
-
     height:900px;
     width:1200px;
 
@@ -233,14 +229,13 @@
     
 }
 .contextMenu{
-    display:flex;
-
     position: absolute;
     width:60px;
     height:250px;
 
-    border-style:inherit;
+    border-style:ridge;
     border-width: 1px;
+    border-color: black;
 
     background-color: rgb(233, 226, 214);
 }
