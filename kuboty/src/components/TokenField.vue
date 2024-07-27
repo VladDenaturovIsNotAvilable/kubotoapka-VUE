@@ -6,7 +6,7 @@
             @:dragover= "(e)=>{
                 this.over = e.target.id
             }">
-                <img v-bind:src = "img.src" width = "40px" height = "40px" v-bind:id = "img.id" >
+                <img v-bind:src = "img.src" width = "40px" height = "40px" v-bind:id = "img.id"  @:dragstart = "moveToken" @:dragover = "" @:dragend = "">
             </div> 
         </div>
 
@@ -27,6 +27,7 @@
     export default{
         data(){
                 return{
+                    movedData:{src:"",Nextid:"",movedFromId:""},
                     over:``,
                     tokenArray:[],
                     boardArray:[]
@@ -50,7 +51,7 @@
         },
         methods:{
             //for TokenField
-             uploadImage(eve){
+            uploadImage(eve){
                var image = eve.target.files[0]
                var imageReader = new FileReader
                imageReader.readAsArrayBuffer(image, "UTF-8")
@@ -82,7 +83,11 @@
                 body:JSON.stringify(data)},);
                 console.log(data)
                 } sendImg()
-                }
+            },
+            moveToken(e){
+                    this.movedData = e.target.src
+            }
+
         }
     }
 

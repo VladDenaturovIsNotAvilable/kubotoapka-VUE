@@ -22,9 +22,7 @@ function createBoard(){
     let gameBoardCreate = fs.readFileSync( "./serverFiles/Board.json", "utf-8" )
     var x = fs.readFileSync("./serverFiles/avatars/huite.png")
     var y = btoa(String.fromCharCode(...new Uint8Array(x)))
-console.log(y)
 
-   
 var objGameBoard = JSON.parse(gameBoardCreate)
 
 for (let i = 0; i < 374; i++) {
