@@ -2,10 +2,11 @@
 import express from 'express'
 import path from 'path'
 import cors from 'cors'
-import fs from 'fs'
+import fs, { readFileSync } from 'fs'
 import Watcher from 'watcher';
 import { WebSocketServer } from 'ws'
 
+var bcg  = fs.readFileSync("./serverFiles/defaultBinaries.json","utf-8")
 const app = express()
 const port = 2137
 
@@ -29,6 +30,7 @@ for (let i = 0; i < 374; i++) {
     let boardObj = {
         src:"data:image/png;base64," + y,
         id:i,
+        hasData : false,
         data:{
             bars:[]
 },
@@ -39,7 +41,7 @@ var x = JSON.stringify(objGameBoard)
 
 fs.writeFileSync("./serverFiles/Board.json",x)
 }
-//createBoard()  //this thing resets the board
+createBoard()  //this thing resets the board
 
 //----- html response -----//
 app.get('/', (req, res) => {
@@ -83,6 +85,7 @@ function gameBoardUploader(){
         var obj = req.body
         var board = JSON.parse(fs.readFileSync("./serverFiles/Board.json", "utf-8"))
          board.boardObjectsArr[obj.number].src = obj.img
+         board.boardObjectsArr[obj.number].hasData = obj.dataState
          var newBoard = JSON.stringify(board)
         fs.writeFileSync("./serverFiles/Board.json",newBoard)
 
@@ -125,6 +128,23 @@ createBoardSocket()
             });
     })
 }
+
+    function movedTokenReciever(){
+        app.post('/sendMovedToken', (req, res) => {
+            var board = readFileSync("./serverFiles/Board.json","utf-8")
+            var boardObj = JSON.parse(board)
+            var movedTokenData = req.body
+            var bcgObj = JSON.parse(bcg)
+           boardObj.boardObjectsArr[movedTokenData.id].src =  movedTokenData.src
+           boardObj.boardObjectsArr[movedTokenData.movedFrom].src =  bcgObj.boardBcg
+           var stringObj = JSON.stringify(boardObj)
+            fs.writeFileSync("./serverFiles/Board.json",stringObj)
+
+
+            res.send('ayaya')
+        })
+    }
+    movedTokenReciever()
 createChatSocket()
 app.listen(port, () => {
   console.log("i live...prolly")

@@ -1,12 +1,12 @@
 <template>
-    <div class = "board" @:dragenter = "(e)=>{this.over = ''}" >
+    <div class = "board" @:dragenter = "(e)=>{this.over = ''}">
 
         <div class = innerBoard>
-            <div class = "imageDiv"  v-for = " img in boardArray" 
+            <div class = "imageDiv"  v-for = " img in boardArray" v-bind:id = "`img`+img.id"  ref = "image"
             @:dragover= "(e)=>{
                 this.over = e.target.id
             }">
-                <img v-bind:src = "img.src" width = "40px" height = "40px" v-bind:id = "img.id"  @:dragstart = "moveToken" @:dragover = "" @:dragend = "">
+                <img class = "image" v-bind:src = "img.src" width = "40px" height = "40px" v-bind:id = "img.id"  @:dragstart = "moveStart" @:dragover = "moveOver"  @:dragend = "moveEnd" @:contextmenu = "context" >
             </div> 
         </div>
 
@@ -27,10 +27,13 @@
     export default{
         data(){
                 return{
-                    movedData:{src:"",Nextid:"",movedFromId:""},
+                    image:"image",
+                    contexted : "false",
+                    clicked : 0,
+                    movedData:{src:"",id:"",movedFrom:""},
                     over:``,
                     tokenArray:[],
-                    boardArray:[]
+                    boardArray:[],
                 }
         },
         mounted(){
@@ -45,12 +48,11 @@
                 var socket = new WebSocket("http://localhost:2139")
             socket.addEventListener("message", (eve) => { 
              var x = JSON.parse(eve.data)
-             console.log(x)
                 this.boardArray = x.boardObjectsArr
+               
 });
         },
         methods:{
-            //for TokenField
             uploadImage(eve){
                var image = eve.target.files[0]
                var imageReader = new FileReader
@@ -74,7 +76,8 @@
             uploadBoardToken(e){
                 const data = {
                     img:e.target.src,
-                    number:this.over
+                    number:this.over,
+                    dataState:true
                 }
                 async function sendImg(){
                     const response = await fetch("http://localhost:2137/gameBoardUpload",{
@@ -84,8 +87,64 @@
                 console.log(data)
                 } sendImg()
             },
-            moveToken(e){
-                    this.movedData = e.target.src
+            moveStart(e){
+                if (this.contexted === "false") {
+                    this.movedData.src = e.target.src
+                    this.movedData.movedFrom = e.target.id
+                }
+                    
+            },
+            moveOver(e){
+                if (this.contexted === "false") {
+                    this.movedData.id = e.target.id
+                }
+                
+            },
+            moveEnd(e){
+
+                if (this.contexted === "false") {
+                    setTimeout(async ()=>{
+                    const response = await fetch("http://localhost:2137/sendMovedToken",{
+                    method:"POST",
+                    headers:{
+                    "Content-Type": "application/json"
+                    },
+                    body:JSON.stringify(this.movedData)
+            }); 
+                },1)
+                }
+               
+                
+            },
+            context(e){
+                //for some reason v-bind ing a class didn't worked.. so i did this the old fashion way
+                //context menu hide and show
+                e.preventDefault();
+                this.contexted = "true"
+                var element = document.createElement("div")
+                var elRef = this.$refs.image[e.target.id]
+                
+
+                if (this.clicked === 0 ) {
+                elRef.appendChild(element)
+                    element.className = "contextMenu"
+                    element.style.left = e.clientX + 50 + `px`
+                    element.style.top = e.clientY + `px`
+                    this.clicked = 1
+                    console.log(e.target)
+
+                } else {
+                    elRef.removeChild((elRef.children[elRef.children.length-1]))
+                    this.clicked = 0
+                    this.contexted = "false"
+                }
+               
+
+                
+                
+        
+
+
             }
 
         }
@@ -149,14 +208,43 @@
     flex-direction:column
   }
 .imageDiv{
+    display: flex;
+    align-items:center;
+    justify-content:center;
+
+
+
+    overflow-y:visible;
+
+
     width:50px;
     height:50px;
     border-style: ridge;
     border-width:1px;
     display:flex;
     flex-wrap: wrap;
-    align-content:center;
-    justify-content:center;
+   
     
+}
+.contextMenu{
+    display:flex;
+
+    position: absolute;
+    width:60px;
+    height:250px;
+
+    border-style:inherit;
+    border-width: 1px;
+
+    background-color: rgb(233, 226, 214);
+}
+.bars{
+    position: relative;
+}
+.bar{
+    width:50px;
+    height:5px;
+    position:absolute;
+    background-color:red;
 }
 </style>
