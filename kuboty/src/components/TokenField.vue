@@ -6,6 +6,11 @@
             @:dragover= "(e)=>{
                 this.over = e.target.id
             }">
+
+
+            <div class = "barsContainer" >
+                <div v-if = "img.hasData" v-for = "elem in barsArray" class = "bar"></div>
+            </div>
                 <img class = "image" v-bind:src = "img.src" width = "40px" height = "40px" v-bind:id = "img.id"  @:dragstart = "moveStart" @:dragover = "moveOver"  @:dragend = "moveEnd" @:contextmenu = "context" >
             </div> 
         </div>
@@ -27,13 +32,15 @@
     export default{
         data(){
                 return{
-                    image:"image",
                     contexted : "false",
                     clicked : 0,
                     movedData:{src:"",id:"",movedFrom:""},
                     over:``,
                     tokenArray:[],
                     boardArray:[],
+
+                    //how many bars
+                    barsArray:[1,1,1]
                 }
         },
         mounted(){
@@ -42,6 +49,8 @@
                 var response = await fetch("http://localhost:2137/getToken")
                  var resData = await response.json()
                  this.tokenArray = (resData.tokensArray)
+
+                
             },1)
                 
                 //board download.. 374 obj
@@ -49,8 +58,9 @@
             socket.addEventListener("message", (eve) => { 
              var x = JSON.parse(eve.data)
                 this.boardArray = x.boardObjectsArr
-               
+                console.log(this.boardArray[0].data.bars)
 });
+
         },
         methods:{
             uploadImage(eve){
@@ -134,7 +144,7 @@
                     console.log(e.target)
 
                 } else {
-                    elRef.removeChild((elRef.children[elRef.children.length-1]))
+                    elRef.removeChild((elRef.children[2]))
                     this.clicked = 0
                     this.contexted = "false"
                 }
@@ -212,17 +222,13 @@
     align-items:center;
     justify-content:center;
 
-
-
-    overflow-y:visible;
-
-
     width:50px;
     height:50px;
     border-style: ridge;
     border-width:1px;
     display:flex;
     flex-wrap: wrap;
+
    
     
 }
@@ -238,13 +244,20 @@
 
     background-color: rgb(233, 226, 214);
 }
-.bars{
-    position: relative;
-}
 .bar{
     width:50px;
     height:5px;
-    position:absolute;
-    background-color:red;
+    border-style:ridge;
+    border-width: 1px;
+    border-color: black;
+}
+.barsContainer{
+    position: relative;
+    bottom:38px;
+    display:flex;
+    flex-direction: column;
+}
+.image{
+    position: absolute;
 }
 </style>

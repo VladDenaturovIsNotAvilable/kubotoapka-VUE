@@ -80,7 +80,7 @@ function tokenUploader(){
 }
 tokenUploader()
 
-function gameBoardUploader(){
+function gameBoardReciever(){
     app.post('/gameBoardUpload', (req, res) => {
         var obj = req.body
         var board = JSON.parse(fs.readFileSync("./serverFiles/Board.json", "utf-8"))
@@ -92,7 +92,7 @@ function gameBoardUploader(){
         res.send('sent')
     })
 }
-gameBoardUploader()
+gameBoardReciever()
 
     function createBoardSocket(){
     const wssT = new WebSocketServer({ port: 2139 });
