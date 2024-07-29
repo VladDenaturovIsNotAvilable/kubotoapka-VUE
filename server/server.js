@@ -135,8 +135,13 @@ createBoardSocket()
             var boardObj = JSON.parse(board)
             var movedTokenData = req.body
             var bcgObj = JSON.parse(bcg)
-           boardObj.boardObjectsArr[movedTokenData.id].src =  movedTokenData.src
-           boardObj.boardObjectsArr[movedTokenData.movedFrom].src =  bcgObj.boardBcg
+           
+
+           if ( movedTokenData.src != boardObj.boardObjectsArr[movedTokenData.id].src) {
+                boardObj.boardObjectsArr[movedTokenData.id].src =  movedTokenData.src
+                boardObj.boardObjectsArr[movedTokenData.movedFrom].src =  bcgObj.boardBcg
+           }
+           
            var stringObj = JSON.stringify(boardObj)
             fs.writeFileSync("./serverFiles/Board.json",stringObj)
 

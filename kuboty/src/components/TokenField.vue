@@ -99,8 +99,11 @@
             },
             moveStart(e){
                 if (this.contexted === "false") {
+                    //token selection
                     this.movedData.src = e.target.src
                     this.movedData.movedFrom = e.target.id
+                    //data selection
+                        
                 }
                     
             },
