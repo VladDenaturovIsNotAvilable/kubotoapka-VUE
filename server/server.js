@@ -140,6 +140,10 @@ createBoardSocket()
            if ( movedTokenData.src != boardObj.boardObjectsArr[movedTokenData.id].src) {
                 boardObj.boardObjectsArr[movedTokenData.id].src =  movedTokenData.src
                 boardObj.boardObjectsArr[movedTokenData.movedFrom].src =  bcgObj.boardBcg
+
+                boardObj.boardObjectsArr[movedTokenData.movedFrom].hasData = false
+                boardObj.boardObjectsArr[movedTokenData.id].hasData = true
+
            }
            
            var stringObj = JSON.stringify(boardObj)

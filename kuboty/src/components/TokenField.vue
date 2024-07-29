@@ -8,8 +8,10 @@
             }">
 
 
-            <div class = "barsContainer" ref = "bars">
-                <div v-if = "img.hasData" v-for = "elem in barsArray" class = "bar"></div>
+            <div class = "barsContainer" ref = "bars" v-bind:id = "`bar`+img.id">
+                <div v-if = "img.hasData" v-for = "elem in barsArray" class = "bar">
+                    <div v-if = "img.hasData" clsss = "innerBar"></div>
+                </div>
             </div>
                 <img class = "image" v-bind:src = "img.src" width = "40px" height = "40px" v-bind:id = "img.id"  @:dragstart = "moveStart" @:dragover = "moveOver"  @:dragend = "moveEnd" @:contextmenu = "context" >
             </div> 
@@ -34,13 +36,14 @@
                 return{
                     contexted : "false",
                     clicked : 0,
-                    movedData:{src:"",id:"",movedFrom:""},
+                    movedData:{src:"",id:"",movedFrom:"",dataState:false,barsData:{name:"",perc:0,color:"green"}},
                     over:``,
                     tokenArray:[],
                     boardArray:[],
 
                     //how many bars
                     barsArray:[1,1,1]
+                    
                 }
         },
         mounted(){
@@ -58,7 +61,8 @@
             socket.addEventListener("message", (eve) => { 
              var x = JSON.parse(eve.data)
                 this.boardArray = x.boardObjectsArr
-                console.log(this.boardArray[0].data.bars)
+                console.log(this.boardArray[0].data)
+
 });
 
         },
@@ -102,8 +106,6 @@
                     //token selection
                     this.movedData.src = e.target.src
                     this.movedData.movedFrom = e.target.id
-                    //data selection
-                        
                 }
                     
             },
@@ -116,6 +118,7 @@
             moveEnd(e){
 
                 if (this.contexted === "false") {
+                    this.movedData.dataState = true
                     setTimeout(async ()=>{
                     const response = await fetch("http://localhost:2137/sendMovedToken",{
                     method:"POST",
@@ -248,6 +251,13 @@
     border-style:ridge;
     border-width: 1px;
     border-color: black;
+    background: linear-gradient(90deg, #00FFFF 77%, white  50%);
+}
+.innerBar{
+    width:48px;
+    height:3px;
+    background-color:blue;
+    position: absolute;
 }
 .barsContainer{
     position: relative;
