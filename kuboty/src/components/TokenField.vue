@@ -9,9 +9,7 @@
 
 
             <div class = "barsContainer" ref = "bars" v-bind:id = "`bar`+img.id">
-                <div v-if = "img.hasData" v-for = "elem in barsArray" class = "bar">
-                    <div v-if = "img.hasData" clsss = "innerBar"></div>
-                </div>
+                <div v-if = "img.hasData" v-for = "elem in boardArray[img.id].data.bars" class = "bar" >{{ elem[0] }}</div>
             </div>
                 <img class = "image" v-bind:src = "img.src" width = "40px" height = "40px" v-bind:id = "img.id"  @:dragstart = "moveStart" @:dragover = "moveOver"  @:dragend = "moveEnd" @:contextmenu = "context" >
             </div> 
@@ -40,10 +38,6 @@
                     over:``,
                     tokenArray:[],
                     boardArray:[],
-
-                    //how many bars
-                    barsArray:[1,1,1]
-                    
                 }
         },
         mounted(){
@@ -61,11 +55,17 @@
             socket.addEventListener("message", (eve) => { 
              var x = JSON.parse(eve.data)
                 this.boardArray = x.boardObjectsArr
-                console.log(this.boardArray[0].data)
 
+                //this value here will be responsible for bars data 
+                //how many arr objects represents how many bars you will have
+                //to tired for this... tbd
+                //saved this method for later use in the edit box on the server side
+                this.boardArray[5].data.bars.push(["75/100",{visible:true}],[])
+                console.log(this.boardArray[4])
 });
+},
 
-        },
+
         methods:{
             uploadImage(eve){
                var image = eve.target.files[0]
@@ -91,7 +91,6 @@
                 const data = {
                     img:e.target.src,
                     number:this.over,
-                    dataState:true
                 }
                 async function sendImg(){
                     const response = await fetch("http://localhost:2137/gameBoardUpload",{
@@ -118,7 +117,6 @@
             moveEnd(e){
 
                 if (this.contexted === "false") {
-                    this.movedData.dataState = true
                     setTimeout(async ()=>{
                     const response = await fetch("http://localhost:2137/sendMovedToken",{
                     method:"POST",
@@ -133,21 +131,48 @@
                 
             },
             context(e){
-                //for some reason v-bind ing a class didn't worked.. so i did this the old fashion way
                 //context menu hide and show
                 e.preventDefault();
                 this.contexted = "true"
                 var element = document.createElement("div")
-                //var elRef = this.$refs.image[e.target.id]
                 
 
                 if (this.clicked === 0 ) {
+                    //menu
                 document.body.appendChild(element)
                     element.className = "contextMenu"
                     element.style.left = e.clientX + 50 + `px`
                     element.style.top = e.clientY + `px`
                     this.clicked = 1
-                    console.log(e.target)
+
+                        //buttons
+                            //edit button
+                    var menuEdit = document.createElement("div")
+                        menuEdit.className = "contextButton menuEditButton"
+                        menuEdit.innerHTML = "edit"
+      
+                    element.appendChild(menuEdit)
+                        menuEdit.addEventListener("click",(eve)=>{
+
+                        })
+
+
+                        //del button
+                    var menuDel = document.createElement("div")
+                        menuDel.className = "contextButton menuDel"
+                        menuDel.innerHTML = "delete"
+
+                        element.appendChild(menuDel)
+
+
+                           //reset button
+                    var menuReset = document.createElement("div")
+                        menuReset.className = "contextButton menuReset"
+                        menuReset.innerHTML = "reset"
+      
+                    element.appendChild(menuReset)
+                        
+
 
                 } else {
                     document.body.removeChild((document.body.children[document.body.children.length-1]))
@@ -246,19 +271,15 @@
     background-color: rgb(233, 226, 214);
 }
 .bar{
-    width:50px;
-    height:5px;
+    width:58px;
+    height:10px;
     border-style:ridge;
     border-width: 1px;
     border-color: black;
     background: linear-gradient(90deg, #00FFFF 77%, white  50%);
+    font-size: 10px;
 }
-.innerBar{
-    width:48px;
-    height:3px;
-    background-color:blue;
-    position: absolute;
-}
+
 .barsContainer{
     position: relative;
     bottom:38px;
@@ -267,5 +288,20 @@
 }
 .image{
     position: absolute;
+}
+.contextButton{
+    width:60px;
+    height:30px;
+    border-width: 1px;
+    border-top-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-style:solid;
+    border-color:black;
+
+
+    display:flex;
+    align-items:center;
+    justify-content: center;
 }
 </style>
