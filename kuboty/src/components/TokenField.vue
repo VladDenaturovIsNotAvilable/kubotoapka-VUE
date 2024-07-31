@@ -32,6 +32,7 @@
     export default{
         data(){
                 return{
+                    editClicked:"false",
                     contexted : "false",
                     clicked : 0,
                     movedData:{src:"",id:"",movedFrom:"",dataState:false,barsData:{name:"",perc:0,color:"green"}},
@@ -60,7 +61,7 @@
                 //how many arr objects represents how many bars you will have
                 //to tired for this... tbd
                 //saved this method for later use in the edit box on the server side
-                this.boardArray[5].data.bars.push(["75/100",{visible:true}],[])
+                this.boardArray[5].data.bars.push()
                 console.log(this.boardArray[4])
 });
 },
@@ -131,37 +132,84 @@
                 
             },
             context(e){
+                 //update bars data for the menu
                 //context menu hide and show
                 e.preventDefault();
                 this.contexted = "true"
                 var element = document.createElement("div")
-                
+                    var menuEdit = document.createElement("div")
+                    var windowEdit = document.createElement("div")
+                        var addButton = document.createElement("div")
+                        var bar = document.createElement("div")
 
                 if (this.clicked === 0 ) {
+                    this.clicked = 1
+                   
                     //menu
                 document.body.appendChild(element)
                     element.className = "contextMenu"
                     element.style.left = e.clientX + 50 + `px`
                     element.style.top = e.clientY + `px`
-                    this.clicked = 1
+                    
 
                         //buttons
                             //edit button
-                    var menuEdit = document.createElement("div")
                         menuEdit.className = "contextButton menuEditButton"
                         menuEdit.innerHTML = "edit"
-      
-                    element.appendChild(menuEdit)
-                        menuEdit.addEventListener("click",(eve)=>{
+                        element.appendChild(menuEdit)
 
+                      
+                        //edit button listener
+                            menuEdit.addEventListener("click",(eve)=>{
+                            this.editClicked = "true"
+                                
+                                    windowEdit.style.left = eve.clientX - 100 + `px`
+                                    windowEdit.style.top = eve.clientY + `px`
+                                    windowEdit.className = "windowEdit"
+                                    document.body.appendChild(windowEdit)
+
+                                    
+                                    addButton.className = "button EditMenuaddButton"
+                                    addButton.style.left = eve.clientX - 95 + `px`
+                                    addButton.style.top = eve.clientY + 5 + `px`
+                                    document.body.appendChild(addButton)
+
+                                    //here will be downloading of a existing bars(it must be both sides :( )
+                                                     
+                                    //adding a new bar
+                                    addButton.addEventListener("click",async (eveB)=>{
+                                        bar.className = "barMenu"
+                                        
+                                        var barData = {
+                                            color:"",
+                                            name:"",
+                                            value:""
+                                        }
+
+                                        bar.style.left = eve.clientX - 70 + `px`
+                                        bar.style.top = eve.clientY + 10 + `px`
+                                        document.body.appendChild(bar)
+
+                                        this.boardArray[e.target.id].data.bars.push([])
+
+                                        const response = await fetch("http://localhost:2137/sendBarData",{
+                                            method:"POST",
+                                            headers:{"Content-Type": "application/json"},
+                                            body:JSON.stringify(barData)
+                                        }); 
+                                            
+                                    })
+
+                                    
                         })
+                        
+                     
 
 
                         //del button
                     var menuDel = document.createElement("div")
                         menuDel.className = "contextButton menuDel"
                         menuDel.innerHTML = "delete"
-
                         element.appendChild(menuDel)
 
 
@@ -169,13 +217,25 @@
                     var menuReset = document.createElement("div")
                         menuReset.className = "contextButton menuReset"
                         menuReset.innerHTML = "reset"
-      
-                    element.appendChild(menuReset)
+                        element.appendChild(menuReset)
                         
 
 
                 } else {
-                    document.body.removeChild((document.body.children[document.body.children.length-1]))
+                    var contextMenuRem = document.querySelector(".contextMenu")
+                    document.body.removeChild(contextMenuRem)
+                        //remove any menu element if clicked
+                            //edit menu
+                    if (this.editClicked === "true") {
+                            var removeEditButton = document.querySelector(".windowEdit")
+                            var removeAddButton = document.querySelector(".EditMenuaddButton")
+                            document.body.removeChild(removeAddButton)
+                            document.body.removeChild(removeEditButton)
+                            
+                        this.editClicked = "false"
+                        
+                    }
+                    
                     this.clicked = 0
                     this.contexted = "false"
                 }
@@ -303,5 +363,44 @@
     display:flex;
     align-items:center;
     justify-content: center;
+}
+.windowEdit{
+    width:250px;
+    height:360px;
+    border-width: 1px;
+
+    border-style:solid;
+    border-color:black;
+    background-color: antiquewhite;
+
+    position:absolute;
+
+    display:flex;
+    align-items:center;
+    justify-content: center;
+}
+.button{
+    width:15px;
+    height:15px;
+    border-width: 1px;
+
+    border-style:solid;
+    border-color:black;
+    background-color: antiquewhite;
+
+    position:absolute;
+
+   
+}
+.barMenu{
+    width:150px;
+    height:9px;
+    border-width: 1px;
+
+    border-style:solid;
+    border-color:black;
+    background-color: white;
+
+    position:absolute;
 }
 </style>

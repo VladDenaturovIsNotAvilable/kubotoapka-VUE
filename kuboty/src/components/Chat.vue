@@ -87,7 +87,6 @@ export default {
             
            }
         }
-        //console.log(this.msgArray)
         },
        
 
