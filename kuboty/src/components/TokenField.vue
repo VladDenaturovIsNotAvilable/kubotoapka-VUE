@@ -56,13 +56,6 @@
             socket.addEventListener("message", (eve) => { 
              var x = JSON.parse(eve.data)
                 this.boardArray = x.boardObjectsArr
-
-                //this value here will be responsible for bars data 
-                //how many arr objects represents how many bars you will have
-                //to tired for this... tbd
-                //saved this method for later use in the edit box on the server side
-                this.boardArray[5].data.bars.push()
-                console.log(this.boardArray[4])
 });
 },
 
@@ -92,6 +85,7 @@
                 const data = {
                     img:e.target.src,
                     number:this.over,
+                    dataState:"true"
                 }
                 async function sendImg(){
                     const response = await fetch("http://localhost:2137/gameBoardUpload",{
@@ -182,16 +176,18 @@
                                         
                                         var barData = {
                                             color:"",
-                                            name:"",
-                                            value:""
+                                            id:e.target.id,
+                                            bar:[]
                                         }
-
+                                            var nextBarX = 70
+                                            var nextBarY = 10
                                         bar.style.left = eve.clientX - 70 + `px`
                                         bar.style.top = eve.clientY + 10 + `px`
+
+
+
                                         document.body.appendChild(bar)
-
-                                        this.boardArray[e.target.id].data.bars.push([])
-
+                                            //this should be server side
                                         const response = await fetch("http://localhost:2137/sendBarData",{
                                             method:"POST",
                                             headers:{"Content-Type": "application/json"},
@@ -344,6 +340,8 @@
     position: relative;
     bottom:38px;
     display:flex;
+    justify-content: flex-start;
+    align-items: flex-start;
     flex-direction: column;
 }
 .image{

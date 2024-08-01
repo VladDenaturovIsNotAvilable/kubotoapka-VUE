@@ -28,6 +28,8 @@ var objGameBoard = JSON.parse(gameBoardCreate)
 
 for (let i = 0; i < 374; i++) {
     let boardObj = {
+        barPosX:70,     //for bar in edit menu menu
+        barPosY:10,
         src:"data:image/png;base64," + y,
         id:i,
         hasData : false,
@@ -128,7 +130,7 @@ createBoardSocket()
             });
     })
 }
-
+createChatSocket()
     function movedTokenReciever(){
         app.post('/sendMovedToken', (req, res) => {
             var board = readFileSync("./serverFiles/Board.json","utf-8")
@@ -153,8 +155,21 @@ createBoardSocket()
             res.send('ayaya')
         })
     }
-    movedTokenReciever()
-createChatSocket()
+movedTokenReciever()
+
+function uploadBarData(){
+    app.post('/sendBarData', (req, res) => {
+
+        var board = JSON.parse(fs.readFileSync("./serverFiles/Board.json", "utf-8"))
+        board.boardObjectsArr[req.body.id].data.bars.push(req.body.bar)
+        var strBoard = JSON.stringify(board)
+        fs.writeFileSync("./serverFiles/Board.json",strBoard)
+
+       console.log(board.boardObjectsArr[req.body.id])
+            res.send('ayaya')
+        })
+}
+uploadBarData()
 app.listen(port, () => {
   console.log("i live...prolly")
 })
