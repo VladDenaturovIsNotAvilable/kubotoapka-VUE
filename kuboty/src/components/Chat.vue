@@ -1,6 +1,6 @@
 
 <template>
-    <div class = "chat">
+    <div class = "chat" >
         <div   class = "chatTextLog" readonly = "true">
             <div class = "messageLogDiv" v-for = "ele in msgArray"> 
                 <img v-bind:src = "ele.messageUser.avatar"  alt = "" class = "chatAvatar"> 

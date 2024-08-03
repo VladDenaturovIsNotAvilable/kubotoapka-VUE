@@ -1,5 +1,5 @@
 <template>
-    <div class = "board" @:dragenter = "(e)=>{this.over = ''}">
+    <div class = "board" @:dragenter = "(e)=>{this.over = ''}" @:click = "cancelMenu">
 
         <div class = innerBoard>
             <div class = "imageDiv"  v-for = " img in boardArray" v-bind:id = "`img`+img.id"  ref = "image"
@@ -20,7 +20,6 @@
         <div>
             <img id = 'niq' v-for="ele in tokenArray" draggable="true" class = "tokenImage" v-bind:src = "ele.data " @:dragend= "uploadBoardToken">
         </div>
-           
     </div>
     
     <input mulitple id = "image" type = "file" class = "UploadButton" accept="image/png, image/jpeg" hidden = "true" @change = "uploadImage" @:dragenter = "(e)=>{this.over = ''}">
@@ -126,9 +125,8 @@
                 
             },
             context(e){
-                 //update bars data for the menu
-                //context menu hide and show
                 e.preventDefault();
+                 if (this.boardArray[e.target.id].hasData === true) {
                 this.contexted = "true"
                 var element = document.createElement("div")
                     var menuEdit = document.createElement("div")
@@ -154,7 +152,7 @@
 
                       
                         //edit button listener
-                            menuEdit.addEventListener("click",(eve)=>{
+                            menuEdit.addEventListener("click",async (eve)=>{
                             this.editClicked = "true"
                                 
                                     windowEdit.style.left = eve.clientX - 100 + `px`
@@ -168,32 +166,65 @@
                                     addButton.style.top = eve.clientY + 5 + `px`
                                     document.body.appendChild(addButton)
 
-                                    //here will be downloading of a existing bars(it must be both sides :( )
-                                                     
-                                    //adding a new bar
-                                    addButton.addEventListener("click",async (eveB)=>{
-                                        bar.className = "barMenu"
-                                        
-                                        var barData = {
-                                            color:"",
-                                            id:e.target.id,
-                                            bar:[]
-                                        }
-                                            var nextBarX = 70
-                                            var nextBarY = 10
-                                        bar.style.left = eve.clientX - 70 + `px`
-                                        bar.style.top = eve.clientY + 10 + `px`
+                                  
 
-
-
-                                        document.body.appendChild(bar)
-                                            //this should be server side
-                                        const response = await fetch("http://localhost:2137/sendBarData",{
+                                    // downloading of a existing bars(it must be both sides :( )
+                                            //here should be creation of the node elements
+                                            const respons1 = await fetch("http://localhost:2137/giveBarData",{
                                             method:"POST",
                                             headers:{"Content-Type": "application/json"},
-                                            body:JSON.stringify(barData)
+                                            body:JSON.stringify({
+                                            color:"",
+                                            id:e.target.id,
+                                            bar:[],
+                                            posY:10
+                                        })
                                         }); 
+                                            const respons1Data = await respons1.json()
+                                            var barsCount = respons1Data.bars.length
                                             
+                                            for (let i = 0; i < barsCount; i++) {
+                                                document.body.appendChild(Object.assign(document.createElement('div'), {
+                                                className :"barMenu",
+                                                style:""
+                                        }))
+                                                
+                                            }
+                                            
+                                        var bar = document.querySelectorAll(".barMenu")
+                                            for (let i = 0; i < bar.length; i++) {
+                                                bar[i].style.left = e.clientX + 20 + `px`
+                                                bar[i].style.top = e.clientY + 25 + (15*i) + `px`
+                                        }
+
+                                    //adding a new bar
+                                        //clientside
+                                    addButton.addEventListener("click",async (eveB)=>{
+                                        document.body.appendChild(Object.assign(document.createElement('div'), {
+                                                className :"barMenu",
+                                                style:""
+                                        }))
+                                        var bar = document.querySelectorAll(".barMenu")
+                                            for (let i = 0; i < bar.length; i++) {
+                                                bar[i].style.left = e.clientX + 20 + `px`
+                                                bar[i].style.top = e.clientY + 25 + (15*i) + `px`
+                                        }
+                                        
+                                       
+                                        
+                                        
+                                      
+                                            //serverside
+                                        const respons2 = await fetch("http://localhost:2137/sendBarData",{
+                                            method:"POST",
+                                            headers:{"Content-Type": "application/json"},
+                                            body:JSON.stringify({
+                                            color:"",
+                                            id:e.target.id,
+                                            bar:[],
+                                            posY:10
+                                        })
+                                        });
                                     })
 
                                     
@@ -225,9 +256,15 @@
                     if (this.editClicked === "true") {
                             var removeEditButton = document.querySelector(".windowEdit")
                             var removeAddButton = document.querySelector(".EditMenuaddButton")
-                            document.body.removeChild(removeAddButton)
-                            document.body.removeChild(removeEditButton)
-                            
+                            var removemenuBarButton = document.querySelectorAll(".barMenu")
+                                document.body.removeChild(removeAddButton)
+                                document.body.removeChild(removeEditButton)
+                                for (let i = 0; i <removemenuBarButton.length; i++) {
+                                    document.body.removeChild(removemenuBarButton[i])
+                                    
+                                }
+                                
+    
                         this.editClicked = "false"
                         
                     }
@@ -235,6 +272,8 @@
                     this.clicked = 0
                     this.contexted = "false"
                 }
+                 }
+              
                
 
                 
@@ -242,6 +281,32 @@
         
 
 
+            },
+            cancelMenu(){
+                if (this.contexted === "true") {
+                    var contextMenuRem = document.querySelector(".contextMenu")
+                    document.body.removeChild(contextMenuRem)
+                        //remove any menu element if clicked
+                            //edit menu
+                    if (this.editClicked === "true") {
+                            var removeEditButton = document.querySelector(".windowEdit")
+                            var removeAddButton = document.querySelector(".EditMenuaddButton")
+                            var removemenuBarButton = document.querySelectorAll(".barMenu")
+                                document.body.removeChild(removeAddButton)
+                                document.body.removeChild(removeEditButton)
+                                for (let i = 0; i <removemenuBarButton.length; i++) {
+                                    document.body.removeChild(removemenuBarButton[i])
+                                    
+                                }
+                                
+    
+                        this.editClicked = "false"
+                        
+                    }
+                    
+                    this.clicked = 0
+                    this.contexted = "false"
+                }
             }
 
         }
@@ -298,11 +363,12 @@
     display:flex;
     flex-wrap: wrap;
     align-content:center;
+    justify-content: center;
     flex-direction:column
   }
 .imageDiv{
     display: flex;
-    align-items:center;
+    align-content:center;
     justify-content:center;
 
     width:50px;
@@ -327,8 +393,8 @@
     background-color: rgb(233, 226, 214);
 }
 .bar{
-    width:58px;
-    height:10px;
+    width:50px;
+    height:5px;
     border-style:ridge;
     border-width: 1px;
     border-color: black;
@@ -338,13 +404,13 @@
 
 .barsContainer{
     position: relative;
-    bottom:38px;
+    bottom:40px;
     display:flex;
-    justify-content: flex-start;
-    align-items: flex-start;
     flex-direction: column;
 }
 .image{
+    width:50px;
+    height:50px;
     position: absolute;
 }
 .contextButton{

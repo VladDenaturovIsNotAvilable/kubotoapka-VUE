@@ -2,7 +2,7 @@
 import express from 'express'
 import path from 'path'
 import cors from 'cors'
-import fs, { readFileSync } from 'fs'
+import fs, { read, readFileSync } from 'fs'
 import Watcher from 'watcher';
 import { WebSocketServer } from 'ws'
 
@@ -28,12 +28,13 @@ var objGameBoard = JSON.parse(gameBoardCreate)
 
 for (let i = 0; i < 374; i++) {
     let boardObj = {
-        barPosX:70,     //for bar in edit menu menu
-        barPosY:10,
+        
         src:"data:image/png;base64," + y,
         id:i,
         hasData : false,
         data:{
+            barPosX:70,     
+            barPosY:10,
             bars:[]
 },
     }
@@ -159,17 +160,27 @@ movedTokenReciever()
 
 function uploadBarData(){
     app.post('/sendBarData', (req, res) => {
-
         var board = JSON.parse(fs.readFileSync("./serverFiles/Board.json", "utf-8"))
         board.boardObjectsArr[req.body.id].data.bars.push(req.body.bar)
+        board.boardObjectsArr[req.body.id].data.barPosY = req.body.posY
         var strBoard = JSON.stringify(board)
         fs.writeFileSync("./serverFiles/Board.json",strBoard)
 
-       console.log(board.boardObjectsArr[req.body.id])
             res.send('ayaya')
         })
 }
 uploadBarData()
+
+function giveBarData(){
+    app.post('/giveBarData', (req, res) => {
+        var board = JSON.parse(fs.readFileSync("./serverFiles/Board.json", "utf-8"))
+        res.send( board.boardObjectsArr[req.body.id].data )
+        })
+    
+}
+
+
+giveBarData()
 app.listen(port, () => {
   console.log("i live...prolly")
 })
