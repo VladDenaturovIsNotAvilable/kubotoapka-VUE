@@ -144,8 +144,15 @@ createChatSocket()
                 boardObj.boardObjectsArr[movedTokenData.id].src =  movedTokenData.src
                 boardObj.boardObjectsArr[movedTokenData.movedFrom].src =  bcgObj.boardBcg
 
+
+                boardObj.boardObjectsArr[movedTokenData.id].data.bars =  boardObj.boardObjectsArr[movedTokenData.movedFrom].data.bars
+                boardObj.boardObjectsArr[movedTokenData.movedFrom].data.bars = []
+                
+
+
+
                 boardObj.boardObjectsArr[movedTokenData.movedFrom].hasData = false
-                boardObj.boardObjectsArr[movedTokenData.id].hasData = true
+                boardObj.boardObjectsArr[movedTokenData.id].hasData = "true"
 
            }
            
@@ -178,9 +185,9 @@ function giveBarData(){
         })
     
 }
-
-
 giveBarData()
+
+
 app.listen(port, () => {
   console.log("i live...prolly")
 })

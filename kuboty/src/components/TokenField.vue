@@ -126,13 +126,13 @@
             },
             context(e){
                 e.preventDefault();
-                 if (this.boardArray[e.target.id].hasData === true) {
+                 if (this.boardArray[e.target.id].hasData === "true") {
                 this.contexted = "true"
                 var element = document.createElement("div")
                     var menuEdit = document.createElement("div")
                     var windowEdit = document.createElement("div")
                         var addButton = document.createElement("div")
-                        var bar = document.createElement("div")
+                        //var bar = document.createElement("div")
 
                 if (this.clicked === 0 ) {
                     this.clicked = 1
@@ -209,9 +209,15 @@
                                                 bar[i].style.left = e.clientX + 20 + `px`
                                                 bar[i].style.top = e.clientY + 25 + (15*i) + `px`
                                         }
-                                        
-                                       
-                                        
+                                        console.log(e.target.getBoundingClientRect().x)
+
+                                        //editing bar data and sending them to a server
+                                                //for adding new one
+                                     var barNew = document.querySelectorAll(".barMenu")
+                                                barNew[barNew.length-1].addEventListener("click",(eveC)=>{
+                                                console.log(eveC.target)
+                                            })
+                                            
                                         
                                       
                                             //serverside
@@ -226,6 +232,15 @@
                                         })
                                         });
                                     })
+                                     //editing bar data and sending them to a server
+                                        //for all of the old ones
+                                     var bar = document.querySelectorAll(".barMenu")
+                                            for (let i = 0; i < bar.length; i++) {
+                                                bar[i].addEventListener("click",(eveC)=>{
+                                                console.log(eveC.target)
+                                            })
+                                                
+                                            }
 
                                     
                         })
