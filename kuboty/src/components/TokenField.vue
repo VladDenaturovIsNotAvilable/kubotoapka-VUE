@@ -184,7 +184,7 @@
                                             var barsCount = respons1Data.bars.length
                                             
                                             for (let i = 0; i < barsCount; i++) {
-                                                document.body.appendChild(Object.assign(document.createElement('div'), {
+                                                document.body.appendChild(Object.assign(document.createElement('input'), {
                                                 className :"barMenu",
                                                 style:""
                                         }))
@@ -200,7 +200,7 @@
                                     //adding a new bar
                                         //clientside
                                     addButton.addEventListener("click",async (eveB)=>{
-                                        document.body.appendChild(Object.assign(document.createElement('div'), {
+                                        document.body.appendChild(Object.assign(document.createElement('input'), {
                                                 className :"barMenu",
                                                 style:""
                                         }))
@@ -214,8 +214,18 @@
                                         //editing bar data and sending them to a server
                                                 //for adding new one
                                      var barNew = document.querySelectorAll(".barMenu")
-                                                barNew[barNew.length-1].addEventListener("click",(eveC)=>{
+                                                barNew[barNew.length-1].addEventListener("click",async (eveC)=>{
                                                 console.log(eveC.target)
+
+                                                const responsBarDataMenu0 = await fetch("http://localhost:2137/sendBarDataMenuToBoard",{
+                                                method:"POST",
+                                                headers:{"Content-Type": "application/json"},
+                                                body:JSON.stringify({
+                                                color:"",
+                                                id:e.target.id,
+                                                barNumber:barNew.length-1,
+                                            })
+                                        });
                                             })
                                             
                                         
@@ -236,8 +246,16 @@
                                         //for all of the old ones
                                      var bar = document.querySelectorAll(".barMenu")
                                             for (let i = 0; i < bar.length; i++) {
-                                                bar[i].addEventListener("click",(eveC)=>{
-                                                console.log(eveC.target)
+                                            bar[i].addEventListener("input",async (eveC)=>{
+                                                const responsBarDataMenu1 = await fetch("http://localhost:2137/sendBarDataMenuToBoard",{
+                                                method:"POST",
+                                                headers:{"Content-Type": "application/json"},
+                                                body:JSON.stringify({
+                                                color:"",
+                                                id:e.target.id,
+                                                barNumber:i,
+                                            })
+                                        });
                                             })
                                                 
                                             }

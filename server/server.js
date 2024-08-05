@@ -52,7 +52,7 @@ app.get('/', (req, res) => {
 })
 
 
-function messageReciever(){
+function sendMessage(){
     app.post('/sendMessage', (req, res) => {
         var chatLog = JSON.parse(fs.readFileSync("./serverFiles/chatLog.json", "utf-8"))
         chatLog.chatlogValue.push(req.body)
@@ -60,9 +60,9 @@ function messageReciever(){
         res.send("nigger")  
 })
 }
-messageReciever()
+sendMessage()
 
-function tokenReciever(){
+function sendToken(){
     app.post('/sendToken', (req, res) => {
 
         var tokenBinaries = JSON.parse(fs.readFileSync("./serverFiles/tokensBinaryData.json", "utf-8"))
@@ -72,18 +72,18 @@ function tokenReciever(){
             
         })
 }
-tokenReciever()
+sendToken()
 
 
-function tokenUploader(){
+function getToken(){
     app.get('/getToken', (req, res) => {
         var x = fs.readFileSync("./serverFiles/tokensBinaryData.json", "utf-8")
         res.send(x)
     })
 }
-tokenUploader()
+getToken()
 
-function gameBoardReciever(){
+function gameBoardUpload(){
     app.post('/gameBoardUpload', (req, res) => {
         var obj = req.body
         var board = JSON.parse(fs.readFileSync("./serverFiles/Board.json", "utf-8"))
@@ -95,7 +95,7 @@ function gameBoardReciever(){
         res.send('sent')
     })
 }
-gameBoardReciever()
+gameBoardUpload()
 
     function createBoardSocket(){
     const wssT = new WebSocketServer({ port: 2139 });
@@ -132,7 +132,7 @@ createBoardSocket()
     })
 }
 createChatSocket()
-    function movedTokenReciever(){
+    function sendMovedToken(){
         app.post('/sendMovedToken', (req, res) => {
             var board = readFileSync("./serverFiles/Board.json","utf-8")
             var boardObj = JSON.parse(board)
@@ -163,9 +163,9 @@ createChatSocket()
             res.send('ayaya')
         })
     }
-movedTokenReciever()
+    sendMovedToken()
 
-function uploadBarData(){
+function sendBarData(){
     app.post('/sendBarData', (req, res) => {
         var board = JSON.parse(fs.readFileSync("./serverFiles/Board.json", "utf-8"))
         board.boardObjectsArr[req.body.id].data.bars.push(req.body.bar)
@@ -176,7 +176,7 @@ function uploadBarData(){
             res.send('ayaya')
         })
 }
-uploadBarData()
+sendBarData()
 
 function giveBarData(){
     app.post('/giveBarData', (req, res) => {
@@ -187,6 +187,14 @@ function giveBarData(){
 }
 giveBarData()
 
+function sendBarDataMenuToBoard(){
+    app.post('/sendBarDataMenuToBoard', (req, res) => {
+        console.log(req.body)
+    res.send('ayaya')
+        })
+
+}
+sendBarDataMenuToBoard()
 
 app.listen(port, () => {
   console.log("i live...prolly")
