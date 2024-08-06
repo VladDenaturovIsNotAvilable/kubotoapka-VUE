@@ -168,7 +168,7 @@
 
                                   
 
-                                    // downloading of a existing bars(it must be both sides :( )
+                                    // downloading of a existing bars
                                             //here should be creation of the node elements
                                             const respons1 = await fetch("http://localhost:2137/giveBarData",{
                                             method:"POST",
@@ -200,7 +200,20 @@
                                     //adding a new bar
                                         //clientside
                                     addButton.addEventListener("click",async (eveB)=>{
-                                        document.body.appendChild(Object.assign(document.createElement('input'), {
+                                            //fetch for bars count
+                                          const barsLengthReq = await   fetch("http://localhost:2137/giveBarsLength",{
+                                            method:"POST",
+                                            headers:{"Content-Type": "application/json"},
+                                            body:JSON.stringify({
+                                                id:e.target.id
+                                            })
+                                        });
+                                        const barsLength = await barsLengthReq.json()
+                                        console.log(barsLength)
+
+
+                                        if (barsLength.dat < 3) {
+                                            document.body.appendChild(Object.assign(document.createElement('input'), {
                                                 className :"barMenu",
                                                 style:""
                                         }))
@@ -214,7 +227,7 @@
                                         //editing bar data and sending them to a server
                                                 //for adding new one
                                      var barNew = document.querySelectorAll(".barMenu")
-                                                barNew[barNew.length-1].addEventListener("click",async (eveC)=>{
+                                                barNew[barNew.length-1].addEventListener("input",async (eveC)=>{
                                                 console.log(eveC.target)
 
                                                 const responsBarDataMenu0 = await fetch("http://localhost:2137/sendBarDataMenuToBoard",{
@@ -224,6 +237,7 @@
                                                 color:"",
                                                 id:e.target.id,
                                                 barNumber:barNew.length-1,
+                                                value:eveC.target.value
                                             })
                                         });
                                             })
@@ -241,6 +255,8 @@
                                             posY:10
                                         })
                                         });
+                                        }
+                                        
                                     })
                                      //editing bar data and sending them to a server
                                         //for all of the old ones
@@ -254,6 +270,7 @@
                                                 color:"",
                                                 id:e.target.id,
                                                 barNumber:i,
+                                                value:eveC.target.value
                                             })
                                         });
                                             })
@@ -376,6 +393,7 @@
 .board{
     height:900px;
     width:1200px;
+    overflow: hidden;
 
     border-width: 1px;
     border-style:ridge;
@@ -390,6 +408,9 @@
   }
 
   .innerBoard{
+    position: absolute;
+    overflow: hidden;
+    
     height:900px;
     width:1200px;
 
@@ -427,24 +448,29 @@
 }
 .bar{
     width:50px;
-    height:5px;
+    height:8px;
     border-style:ridge;
     border-width: 1px;
     border-color: black;
-    background: linear-gradient(90deg, #00FFFF 77%, white  50%);
+
     font-size: 10px;
+
+    text-align: center;
+    margin-bottom: 3px;
 }
 
 .barsContainer{
+    width:50xp;
+    height:50px;
     position: relative;
     bottom:40px;
-    display:flex;
     flex-direction: column;
 }
 .image{
     width:50px;
     height:50px;
     position: absolute;
+  
 }
 .contextButton{
     width:60px;
@@ -497,7 +523,7 @@
     border-style:solid;
     border-color:black;
     background-color: white;
-
+    display:flex;
     position:absolute;
 }
 </style>

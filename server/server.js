@@ -16,7 +16,7 @@ function appUses(){
     app.use(express.static('/dist'));
     app.use(express.static('/serverFiles/avatars'));
 }
-appUses()
+    appUses()
 
 function createBoard(){
     fs.writeFileSync("./serverFiles/Board.json",JSON.stringify({"boardObjectsArr":[]}))
@@ -44,13 +44,13 @@ var x = JSON.stringify(objGameBoard)
 
 fs.writeFileSync("./serverFiles/Board.json",x)
 }
-createBoard()  //this thing resets the board
+    createBoard()  //this thing resets the board
+
 
 //----- html response -----//
 app.get('/', (req, res) => {
     res.sendFile((path.join(__dirname, `dist`, `/index.html`)))
 })
-
 
 function sendMessage(){
     app.post('/sendMessage', (req, res) => {
@@ -60,7 +60,8 @@ function sendMessage(){
         res.send("nigger")  
 })
 }
-sendMessage()
+    sendMessage()
+
 
 function sendToken(){
     app.post('/sendToken', (req, res) => {
@@ -72,7 +73,7 @@ function sendToken(){
             
         })
 }
-sendToken()
+    sendToken()
 
 
 function getToken(){
@@ -81,7 +82,8 @@ function getToken(){
         res.send(x)
     })
 }
-getToken()
+    getToken()
+
 
 function gameBoardUpload(){
     app.post('/gameBoardUpload', (req, res) => {
@@ -95,7 +97,8 @@ function gameBoardUpload(){
         res.send('sent')
     })
 }
-gameBoardUpload()
+    gameBoardUpload()
+
 
     function createBoardSocket(){
     const wssT = new WebSocketServer({ port: 2139 });
@@ -115,7 +118,8 @@ gameBoardUpload()
 
     })
 }
-createBoardSocket()
+    createBoardSocket()
+
 
     function createChatSocket(){
     const wss = new WebSocketServer({ port: 2138 });
@@ -131,7 +135,9 @@ createBoardSocket()
             });
     })
 }
-createChatSocket()
+    createChatSocket()
+
+
     function sendMovedToken(){
         app.post('/sendMovedToken', (req, res) => {
             var board = readFileSync("./serverFiles/Board.json","utf-8")
@@ -165,6 +171,7 @@ createChatSocket()
     }
     sendMovedToken()
 
+
 function sendBarData(){
     app.post('/sendBarData', (req, res) => {
         var board = JSON.parse(fs.readFileSync("./serverFiles/Board.json", "utf-8"))
@@ -176,7 +183,8 @@ function sendBarData(){
             res.send('ayaya')
         })
 }
-sendBarData()
+    sendBarData()
+
 
 function giveBarData(){
     app.post('/giveBarData', (req, res) => {
@@ -185,16 +193,33 @@ function giveBarData(){
         })
     
 }
-giveBarData()
+    giveBarData()
+
 
 function sendBarDataMenuToBoard(){
     app.post('/sendBarDataMenuToBoard', (req, res) => {
-        console.log(req.body)
+        var board = JSON.parse(fs.readFileSync("./serverFiles/Board.json", "utf-8"))
+        board.boardObjectsArr[req.body.id].data.bars[req.body.barNumber] = [req.body.value]
+        var newBoard = JSON.stringify(board)
+        fs.writeFileSync("./serverFiles/Board.json",newBoard)
     res.send('ayaya')
         })
 
 }
-sendBarDataMenuToBoard()
+    sendBarDataMenuToBoard()
+
+
+function giveBarsLength(){
+    app.post('/giveBarsLength', (req, res) => {
+        var board = JSON.parse(fs.readFileSync("./serverFiles/Board.json", "utf-8"))
+        var boardLength = {
+            dat:board.boardObjectsArr[req.body.id].data.bars.length
+        }
+        res.send( boardLength )
+        })
+}
+    giveBarsLength()
+    
 
 app.listen(port, () => {
   console.log("i live...prolly")
