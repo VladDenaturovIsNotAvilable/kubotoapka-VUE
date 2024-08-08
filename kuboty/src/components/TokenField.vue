@@ -169,24 +169,24 @@
                                   
 
                                     // downloading of a existing bars
-                                            //here should be creation of the node elements
                                             const respons1 = await fetch("http://localhost:2137/giveBarData",{
                                             method:"POST",
                                             headers:{"Content-Type": "application/json"},
                                             body:JSON.stringify({
                                             color:"",
                                             id:e.target.id,
-                                            bar:[],
+                                            bar:[""],
                                             posY:10
                                         })
                                         }); 
                                             const respons1Data = await respons1.json()
                                             var barsCount = respons1Data.bars.length
                                             
+                                            
                                             for (let i = 0; i < barsCount; i++) {
                                                 document.body.appendChild(Object.assign(document.createElement('input'), {
                                                 className :"barMenu",
-                                                style:""
+                                                value:respons1Data.bars[i][0]
                                         }))
                                                 
                                             }
@@ -222,13 +222,11 @@
                                                 bar[i].style.left = e.clientX + 20 + `px`
                                                 bar[i].style.top = e.clientY + 25 + (15*i) + `px`
                                         }
-                                        console.log(e.target.getBoundingClientRect().x)
 
                                         //editing bar data and sending them to a server
                                                 //for adding new one
                                      var barNew = document.querySelectorAll(".barMenu")
                                                 barNew[barNew.length-1].addEventListener("input",async (eveC)=>{
-                                                console.log(eveC.target)
 
                                                 const responsBarDataMenu0 = await fetch("http://localhost:2137/sendBarDataMenuToBoard",{
                                                 method:"POST",
@@ -251,7 +249,7 @@
                                             body:JSON.stringify({
                                             color:"",
                                             id:e.target.id,
-                                            bar:[],
+                                            bar:[""],
                                             posY:10
                                         })
                                         });
