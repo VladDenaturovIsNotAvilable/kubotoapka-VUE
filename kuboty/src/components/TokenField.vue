@@ -9,7 +9,7 @@
 
 
             <div class = "barsContainer" ref = "bars" v-bind:id = "`bar`+img.id">
-                <div v-if = "img.hasData" v-for = "elem in boardArray[img.id].data.bars" class = "bar" >{{ elem[0] }}</div>
+                <div  v-if = "img.hasData" v-for = "elem in boardArray[img.id].data.bars" class = "bar" :style = "{borderColor: boardArray[img.id].data.barsColors[boardArray[img.id].data.bars.indexOf(elem)]}">{{ elem[0] }} </div>
             </div>
                 <img class = "image" v-bind:src = "img.src" width = "40px" height = "40px" v-bind:id = "img.id"  @:dragstart = "moveStart" @:dragover = "moveOver"  @:dragend = "moveEnd" @:contextmenu = "context" >
             </div> 
@@ -22,7 +22,7 @@
         </div>
     </div>
     
-    <input mulitple id = "image" type = "file" class = "UploadButton" accept="image/png, image/jpeg" hidden = "true" @change = "uploadImage" @:dragenter = "(e)=>{this.over = ''}">
+    <input mulitple id = "image" type = "file" class = "UploadButton" accept="image/png, image/jpeg" hidden = "true" @change = "uploadImage">
     <label for ="image">Upload Image</label >
 </template>
 
@@ -65,10 +65,22 @@
                var imageReader = new FileReader
                imageReader.readAsArrayBuffer(image, "UTF-8")
 
+
                imageReader.onload = (readerEve) => {
                 var imageData = readerEve.target.result; 
-                var tokenBinary = {data:"data:image/png;base64,"+ btoa(String.fromCharCode(...new Uint8Array(imageData)))}
+                var buffer  = new Uint8Array(imageData)
+                var bufferArr = []
+                var token = ""
 
+                for (let i = 0; i < buffer.length-1; i++) {
+                    bufferArr.push(buffer[i])
+                     token += String.fromCharCode(buffer[i])
+                }
+                var tokenBtoa = window.btoa(token)
+                var tokenBinary = {data:"data:image/png;base64," + tokenBtoa} 
+              
+
+         
                     //for some reason i couldn't use async at uploadImage function.. so i did this
 
                 async function sendToken(){
@@ -76,7 +88,8 @@
                 method:"POST",
                 headers:{"Content-Type": "application/json"},
                 body:JSON.stringify(tokenBinary)},);
-                } sendToken()
+                };
+                 sendToken()
                 }
             },
 
@@ -91,7 +104,6 @@
                 method:"POST",
                 headers:{"Content-Type": "application/json"},
                 body:JSON.stringify(data)},);
-                console.log(data)
                 } sendImg()
             },
             moveStart(e){
@@ -173,10 +185,7 @@
                                             method:"POST",
                                             headers:{"Content-Type": "application/json"},
                                             body:JSON.stringify({
-                                            color:"",
                                             id:e.target.id,
-                                            bar:[""],
-                                            posY:10
                                         })
                                         }); 
                                             const respons1Data = await respons1.json()
@@ -186,17 +195,14 @@
                                             for (let i = 0; i < barsCount; i++) {
                                                 document.body.appendChild(Object.assign(document.createElement('input'), {
                                                 className :"barMenu",
-                                                value:respons1Data.bars[i][0]
-                                        }))
-                                                
-                                            }
+                                                value:respons1Data.bars[i][0],
+                                        }))}
                                             
                                         var bar = document.querySelectorAll(".barMenu")
                                             for (let i = 0; i < bar.length; i++) {
                                                 bar[i].style.left = e.clientX + 20 + `px`
                                                 bar[i].style.top = e.clientY + 25 + (15*i) + `px`
                                         }
-
                                     //adding a new bar
                                         //clientside
                                     addButton.addEventListener("click",async (eveB)=>{
@@ -209,7 +215,6 @@
                                             })
                                         });
                                         const barsLength = await barsLengthReq.json()
-                                        console.log(barsLength)
 
 
                                         if (barsLength.dat < 3) {
@@ -227,7 +232,6 @@
                                                 //for adding new one
                                      var barNew = document.querySelectorAll(".barMenu")
                                                 barNew[barNew.length-1].addEventListener("input",async (eveC)=>{
-
                                                 const responsBarDataMenu0 = await fetch("http://localhost:2137/sendBarDataMenuToBoard",{
                                                 method:"POST",
                                                 headers:{"Content-Type": "application/json"},
@@ -238,6 +242,7 @@
                                                 value:eveC.target.value
                                             })
                                         });
+
                                             })
                                             
                                         
@@ -249,7 +254,7 @@
                                             body:JSON.stringify({
                                             color:"",
                                             id:e.target.id,
-                                            bar:[""],
+                                            bar:["",{}],
                                             posY:10
                                         })
                                         });
@@ -259,6 +264,7 @@
                                      //editing bar data and sending them to a server
                                         //for all of the old ones
                                      var bar = document.querySelectorAll(".barMenu")
+                                     var barGame = document.querySelectorAll(".bar")
                                             for (let i = 0; i < bar.length; i++) {
                                             bar[i].addEventListener("input",async (eveC)=>{
                                                 const responsBarDataMenu1 = await fetch("http://localhost:2137/sendBarDataMenuToBoard",{
@@ -271,11 +277,10 @@
                                                 value:eveC.target.value
                                             })
                                         });
-                                            })
-                                                
+                                            })                                       
                                             }
 
-                                    
+                                    console.log(this.boardArray)
                         })
                         
                      

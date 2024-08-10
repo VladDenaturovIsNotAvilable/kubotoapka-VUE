@@ -35,7 +35,8 @@ for (let i = 0; i < 374; i++) {
         data:{
             barPosX:70,     
             barPosY:10,
-            bars:[]
+            bars:[],
+            barsColors:["black","black","black"]
 },
     }
  objGameBoard.boardObjectsArr.push(boardObj) 
@@ -48,8 +49,9 @@ fs.writeFileSync("./serverFiles/Board.json",x)
 
 
 //----- html response -----//
+        //i need to fix this
 app.get('/', (req, res) => {
-    res.sendFile((path.join(__dirname, `dist`, `/index.html`)))
+    res.sendFile((path.join(`./`, `dist`, `/index.html`)))
 })
 
 function sendMessage(){
