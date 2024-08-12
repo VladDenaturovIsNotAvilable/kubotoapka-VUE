@@ -103,8 +103,9 @@
                     const response = await fetch("http://localhost:2137/gameBoardUpload",{
                 method:"POST",
                 headers:{"Content-Type": "application/json"},
-                body:JSON.stringify(data)},);
+                body:JSON.stringify(data)});
                 } sendImg()
+                console.log(data)
             },
             moveStart(e){
                 if (this.contexted === "false") {

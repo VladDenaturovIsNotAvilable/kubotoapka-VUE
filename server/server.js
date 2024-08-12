@@ -2,7 +2,7 @@
 import express from 'express'
 import path from 'path'
 import cors from 'cors'
-import fs, { read, readFileSync } from 'fs'
+import fs, { readFileSync } from 'fs'
 import Watcher from 'watcher';
 import { WebSocketServer } from 'ws'
 
@@ -10,16 +10,16 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
 
-
-
-var bcg  = fs.readFileSync("./serverFiles/defaultBinaries.json","utf-8")
 const app = express()
 const port = 2137
+var bcg  = fs.readFileSync("./serverFiles/defaultBinaries.json","utf-8")
+
 
 
     app.use(cors())
     app.use(express.static(__dirname +'/dist'));
     app.use(express.static(__dirname +'/serverFiles/avatars'));
+    app.use(express.json({limit: "10mb"}));
 
 
 function createBoard(){
@@ -53,7 +53,6 @@ fs.writeFileSync("./serverFiles/Board.json",x)
 
 
 //----- html response -----//
-        //i need to fix this
 app.get('/', (req, res) => {
     res.sendFile((path.join(__dirname, `dist`, `/index.html`)))
     console.log(__dirname);
@@ -95,6 +94,7 @@ function getToken(){
 function gameBoardUpload(){
     app.post('/gameBoardUpload', (req, res) => {
         var obj = req.body
+        console.log(req)
         var board = JSON.parse(fs.readFileSync("./serverFiles/Board.json", "utf-8"))
          board.boardObjectsArr[obj.number].src = obj.img
          board.boardObjectsArr[obj.number].hasData = obj.dataState
