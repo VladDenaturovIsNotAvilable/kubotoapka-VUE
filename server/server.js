@@ -55,7 +55,6 @@ fs.writeFileSync("./serverFiles/Board.json",x)
 //----- html response -----//
 app.get('/', (req, res) => {
     res.sendFile((path.join(__dirname, `dist`, `/index.html`)))
-    console.log(__dirname);
 })
 
 function sendMessage(){
@@ -94,7 +93,6 @@ function getToken(){
 function gameBoardUpload(){
     app.post('/gameBoardUpload', (req, res) => {
         var obj = req.body
-        console.log(req)
         var board = JSON.parse(fs.readFileSync("./serverFiles/Board.json", "utf-8"))
          board.boardObjectsArr[obj.number].src = obj.img
          board.boardObjectsArr[obj.number].hasData = obj.dataState

@@ -9,7 +9,14 @@
 
 
             <div class = "barsContainer" ref = "bars" v-bind:id = "`bar`+img.id">
-                <div  v-if = "img.hasData" v-for = "elem in boardArray[img.id].data.bars" class = "bar" :style = "{borderColor: boardArray[img.id].data.barsColors[boardArray[img.id].data.bars.indexOf(elem)]}">{{ elem[0] }} </div>
+                <input 
+                 v-if = "img.hasData"
+                 v-for = "elem in boardArray[img.id].data.bars"
+                 class = "bar"
+                  :style = "{borderColor: boardArray[img.id].data.barsColors[boardArray[img.id].data.bars.indexOf(elem)]}"
+                  @:input = "editBarsMenu"
+                  v-bind:value = "elem[0]"
+                ></input>
             </div>
                 <img class = "image" v-bind:src = "img.src" width = "40px" height = "40px" v-bind:id = "img.id"  @:dragstart = "moveStart" @:dragover = "moveOver"  @:dragend = "moveEnd" @:contextmenu = "context" >
             </div> 
@@ -60,6 +67,35 @@
 
 
         methods:{
+            async editBarsMenu(e){
+                var imageId = e.target.parentNode.parentNode.id
+               var parsedId =  parseInt(imageId.replace("img",""))
+               var Children =  e.target.parentNode.childNodes;
+                var arr = []
+                var index
+                    Children.forEach(element => {
+                        arr.push(element)
+                    });
+
+                    arr.forEach((element)=>{
+                        if (element === e.target) { 
+                           index =  arr.indexOf(element)-1
+                            
+                        }
+                    })
+
+             
+                const responsBarDataMenu0 = await fetch("http://localhost:2137/sendBarDataMenuToBoard",{
+                                                method:"POST",
+                                                headers:{"Content-Type": "application/json"},
+                                                body:JSON.stringify({
+                                                color:"",
+                                                id:parsedId,
+                                                barNumber:index,
+                                                value:e.target.value
+                                            })
+                                        });
+            },
             uploadImage(eve){
                var image = eve.target.files[0]
                var imageReader = new FileReader
@@ -93,18 +129,16 @@
                 }
             },
 
-            uploadBoardToken(e){
+            async uploadBoardToken(e){
                 const data = {
                     img:e.target.src,
                     number:this.over,
                     dataState:"true"
                 }
-                async function sendImg(){
                     const response = await fetch("http://localhost:2137/gameBoardUpload",{
                 method:"POST",
                 headers:{"Content-Type": "application/json"},
                 body:JSON.stringify(data)});
-                } sendImg()
                 console.log(data)
             },
             moveStart(e){
@@ -243,7 +277,6 @@
                                                 value:eveC.target.value
                                             })
                                         });
-
                                             })
                                             
                                         
@@ -451,7 +484,7 @@
     background-color: rgb(233, 226, 214);
 }
 .bar{
-    width:50px;
+    width:45px;
     height:8px;
     border-style:ridge;
     border-width: 1px;
@@ -464,6 +497,8 @@
 }
 
 .barsContainer{
+    margin-bottom: 16px;
+    display: flex;
     width:50xp;
     height:50px;
     position: relative;
