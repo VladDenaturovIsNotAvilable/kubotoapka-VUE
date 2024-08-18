@@ -30,7 +30,7 @@ function createBoard(){
 
 var objGameBoard = JSON.parse(gameBoardCreate)
 
-for (let i = 0; i < 374; i++) {
+for (let i = 0; i < 1000; i++) {
     let boardObj = {
         
         src:"data:image/png;base64," + y,
@@ -40,7 +40,8 @@ for (let i = 0; i < 374; i++) {
             barPosX:70,     
             barPosY:10,
             bars:[],
-            barsColors:["black","black","black"]
+            barsColors:["","",""],
+            borderColors:["","",""]
 },
     }
  objGameBoard.boardObjectsArr.push(boardObj) 
@@ -152,13 +153,21 @@ function gameBoardUpload(){
            
 
            if ( movedTokenData.src != boardObj.boardObjectsArr[movedTokenData.id].src) {
+                    //image change
                 boardObj.boardObjectsArr[movedTokenData.id].src =  movedTokenData.src
                 boardObj.boardObjectsArr[movedTokenData.movedFrom].src =  bcgObj.boardBcg
 
-
+                //bars data
                 boardObj.boardObjectsArr[movedTokenData.id].data.bars =  boardObj.boardObjectsArr[movedTokenData.movedFrom].data.bars
                 boardObj.boardObjectsArr[movedTokenData.movedFrom].data.bars = []
+
+                //bars colors
+                boardObj.boardObjectsArr[movedTokenData.id].data.barsColors =  boardObj.boardObjectsArr[movedTokenData.movedFrom].data.barsColors
+                boardObj.boardObjectsArr[movedTokenData.movedFrom].data.barsColors = ["","",""]
                 
+                //bars border colors
+                boardObj.boardObjectsArr[movedTokenData.id].data.borderColors =  boardObj.boardObjectsArr[movedTokenData.movedFrom].data.barsColors
+                boardObj.boardObjectsArr[movedTokenData.movedFrom].data.borderColors = ["","",""]
 
 
 

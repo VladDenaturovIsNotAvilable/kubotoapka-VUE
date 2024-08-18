@@ -13,7 +13,9 @@
                  v-if = "img.hasData"
                  v-for = "elem in boardArray[img.id].data.bars"
                  class = "bar"
-                  :style = "{borderColor: boardArray[img.id].data.barsColors[boardArray[img.id].data.bars.indexOf(elem)]}"
+                  :style = "{borderColor: boardArray[img.id].data.borderColors[boardArray[img.id].data.bars.indexOf(elem)],
+                     backgroundImage:`linear-gradient(${this.angle}deg ,${boardArray[img.id].data.barsColors[boardArray[img.id].data.bars.indexOf(elem)] + ` 70%`}, ${this.color2 + ` 0%`})`}"
+
                   @:input = "editBarsMenu"
                   v-bind:value = "elem[0]"
                 ></input>
@@ -38,11 +40,17 @@
     export default{
         data(){
                 return{
+                    angle: '90', 
+                    color1:"red",
+                    color2:"white",
+
                     editClicked:"false",
                     contexted : "false",
                     clicked : 0,
+
                     movedData:{src:"",id:"",movedFrom:"",dataState:false,barsData:{name:"",perc:0,color:"green"}},
                     over:``,
+
                     tokenArray:[],
                     boardArray:[],
                 }
@@ -57,7 +65,7 @@
                 
             },1)
                 
-                //board download.. 374 obj
+                //board download
                 var socket = new WebSocket("http://localhost:2139")
             socket.addEventListener("message", (eve) => { 
              var x = JSON.parse(eve.data)
@@ -428,24 +436,25 @@
     border-width: 1px
 }
 .board{
+
     height:900px;
     width:1200px;
-    overflow: hidden;
 
+    overflow: hidden;
     border-width: 1px;
     border-style:ridge;
     border-color: black;
     border-radius: 10px;
 
-    display:flex;
     flex-wrap: wrap;
     align-content:center;
     justify-content:center;
-    flex-direction:column
+    flex-direction: column;
   }
 
   .innerBoard{
-    position: absolute;
+    scale:1.0;
+    position: relative;
     overflow: hidden;
     
     height:900px;
@@ -453,17 +462,17 @@
 
     display:flex;
     flex-wrap: wrap;
-    align-content:center;
-    justify-content: center;
-    flex-direction:column
+    align-content:flex-start;
+    justify-content: flex-start;
+    
   }
 .imageDiv{
     display: flex;
     align-content:center;
     justify-content:center;
 
-    width:50px;
-    height:50px;
+    width:35px;
+    height:35px;
     border-style: ridge;
     border-width:1px;
     display:flex;
@@ -506,8 +515,8 @@
     flex-direction: column;
 }
 .image{
-    width:50px;
-    height:50px;
+    width:35px;
+    height:35px;
     position: absolute;
   
 }
