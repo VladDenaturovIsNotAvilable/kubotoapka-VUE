@@ -1,5 +1,5 @@
 <template>
-    <div class = "board" @:dragenter = "(e)=>{this.over = ''}" @:click = "cancelMenu">
+    <div ref = "board" class = "board" @:dragenter = "(e)=>{this.over = ''}" @:click = "cancelMenu" @:mousedown.move = "moveBoard">
 
         <div class = innerBoard>
             <div class = "imageDiv"  v-for = " img in boardArray" v-bind:id = "`img`+img.id"  ref = "image"
@@ -40,6 +40,8 @@
     export default{
         data(){
                 return{
+                    boardClicked:0,
+                    inter:null,
                     angle: '90', 
                     color1:"red",
                     color2:"white",
@@ -59,23 +61,54 @@
             //getting tokens
             setTimeout(async ()=>{ //set timeout is for using this and await at the same time
                 var response = await fetch("http://localhost:2137/getToken")
-                 var resData = await response.json()
-                 this.tokenArray = (resData.tokensArray)
-
-                
+                var resData = await response.json()
+                this.tokenArray = (resData.tokensArray)
             },1)
                 
-                //board download
+            //board download
                 var socket = new WebSocket("http://localhost:2139")
-            socket.addEventListener("message", (eve) => { 
-             var x = JSON.parse(eve.data)
+                socket.addEventListener("message", (eve) => { 
+                var x = JSON.parse(eve.data)
                 this.boardArray = x.boardObjectsArr
-});
+                });
+
 },
 
 
         methods:{
-            async editBarsMenu(e){
+            moveBoard(e){
+                var x = 0
+                var y=0
+                //AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA but it workd !
+                this.$refs.board.addEventListener("mousemove",(ev)=>{
+                    if (ev.movementX >0) {
+                        e.target.parentNode.parentNode.style.left  =x + "px" 
+                        x+=16 
+                    }
+                    if (ev.movementX<0) {
+                        e.target.parentNode.parentNode.style.left  =x + "px"
+                        x-=16
+                    }
+
+                    if (ev.movementY >0) {
+                        e.target.parentNode.parentNode.style.top  =y + "px" 
+                        y+=16 
+                    }
+
+                    if (ev.movementY < 0) {
+                        e.target.parentNode.parentNode.style.top  =y + "px" 
+                        y-=16 
+                    }
+                })
+               
+                
+              
+                  
+                
+            
+               
+            },
+        async editBarsMenu(e){
                 var imageId = e.target.parentNode.parentNode.id
                var parsedId =  parseInt(imageId.replace("img",""))
                var Children =  e.target.parentNode.childNodes;
@@ -104,7 +137,7 @@
                                             })
                                         });
             },
-            uploadImage(eve){
+        uploadImage(eve){
                var image = eve.target.files[0]
                var imageReader = new FileReader
                imageReader.readAsArrayBuffer(image, "UTF-8")
@@ -137,7 +170,7 @@
                 }
             },
 
-            async uploadBoardToken(e){
+        async uploadBoardToken(e){
                 const data = {
                     img:e.target.src,
                     number:this.over,
@@ -149,7 +182,7 @@
                 body:JSON.stringify(data)});
                 console.log(data)
             },
-            moveStart(e){
+        moveStart(e){
                 if (this.contexted === "false") {
                     //token selection
                     this.movedData.src = e.target.src
@@ -157,13 +190,13 @@
                 }
                     
             },
-            moveOver(e){
+        moveOver(e){
                 if (this.contexted === "false") {
                     this.movedData.id = e.target.id
                 }
                 
             },
-            moveEnd(e){
+        moveEnd(e){
 
                 if (this.contexted === "false") {
                     setTimeout(async ()=>{
@@ -179,7 +212,7 @@
                
                 
             },
-            context(e){
+        context(e){
                 e.preventDefault();
                  if (this.boardArray[e.target.id].hasData === "true") {
                 this.contexted = "true"
@@ -377,7 +410,7 @@
 
 
             },
-            cancelMenu(){
+        cancelMenu(){
                 if (this.contexted === "true") {
                     var contextMenuRem = document.querySelector(".contextMenu")
                     document.body.removeChild(contextMenuRem)

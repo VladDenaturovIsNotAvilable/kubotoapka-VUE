@@ -30,7 +30,7 @@ function createBoard(){
 
 var objGameBoard = JSON.parse(gameBoardCreate)
 
-for (let i = 0; i < 1000; i++) {
+for (let i = 0; i < 800; i++) {
     let boardObj = {
         
         src:"data:image/png;base64," + y,
